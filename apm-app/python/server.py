@@ -5,7 +5,6 @@ from database import init_db, get_data, update_data
 app = Flask(__name__)
 CORS(app)
 
-# Initialiser la base de données
 init_db()
 
 @app.route('/get_data', methods=['GET'])

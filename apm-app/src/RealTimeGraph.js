@@ -11,28 +11,29 @@ const RealTimeGraph = () => {
 
   const [isTraining, setIsTraining] = useState(false);
   const [timer, setTimer] = useState(60);
-  const [score, setScore] = useState(0);  // Le score est réactualisé en temps réel
+  const [score, setScore] = useState(0);
+  const [actionCount, setActionCount] = useState(0);  // Compteur d'actions
   const intervalRef = useRef(null);
 
-  // Fonction handleAction avec useCallback pour garantir la stabilité
   const handleAction = useCallback((action) => {
     if (isTraining) {
-      setScore((prev) => {
-        const newCount = prev + 1;
-        const newScore = (newCount / 60).toFixed(2);  // Calculer le score APM en temps réel
-        return newScore;
-      });
+      setActionCount((prevCount) => prevCount + 1);
+      const currentScore = ((actionCount + 1) / (60 - timer)).toFixed(2);
+      setScore(currentScore);
+    }
+  
+    // Envoi des données après l'entraînement
+    if (!isTraining) {
       fetch("http://localhost:5000/update_data", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action }),
       });
     }
-  }, [isTraining]);
+  }, [isTraining, timer, actionCount]);  
 
-  // Fonction generateRandomAction avec useCallback
   const generateRandomAction = useCallback(() => {
-    if (!isTraining) return; // Ne génère pas d'action si l'entraînement n'est pas actif
+    if (!isTraining) return;
     const actions = ["Z", "Q", "S", "D", "Space", "Click"];
     const randomAction = actions[Math.floor(Math.random() * actions.length)];
     handleAction(randomAction);
@@ -60,13 +61,14 @@ const RealTimeGraph = () => {
     setIsTraining(true);
     setScore(0);  // Réinitialiser le score au début de l'entraînement
     setTimer(60);
+    setActionCount(0);  // Réinitialiser le compteur d'actions
 
     // Lancer l'intervalle de l'entraînement
     intervalRef.current = setInterval(() => {
       setTimer((prev) => {
         if (prev <= 1) {
           clearInterval(intervalRef.current);
-          setIsTraining(false);
+          setIsTraining(false); // Fin de l'entraînement, réactive les graphiques
           return 0;
         }
         return prev - 1;
@@ -74,9 +76,9 @@ const RealTimeGraph = () => {
     }, 1000);
 
     // Lancer l'intervalle pour générer des actions toutes les 300ms
-    const actionInterval = setInterval(generateRandomAction, 300); 
+    const actionInterval = setInterval(generateRandomAction, 300);
 
-    return () => clearInterval(actionInterval); // Nettoyer l'intervalle lorsqu'il n'est plus nécessaire
+    return () => clearInterval(actionInterval); // Nettoyer l'intervalle
   };
 
   return (
@@ -86,23 +88,28 @@ const RealTimeGraph = () => {
         <p><strong>Moyenne APM :</strong> {data.meanApm}</p>
         <p><strong>Médiane APM :</strong> {data.medianApm || 'N/A'}</p>
       </div>
-      <Plot
-        data={[
-          {
-            type: 'bar',
-            x: data.labels,
-            y: data.values,
-            marker: {
-              color: ['red', 'blue', 'green', 'yellow', 'purple', 'orange'],
+
+      {/* Afficher le graphique seulement si l'entraînement est terminé */}
+      {!isTraining && (
+        <Plot
+          data={[
+            {
+              type: 'bar',
+              x: data.labels,
+              y: data.values,
+              marker: {
+                color: ['red', 'blue', 'green', 'yellow', 'purple', 'orange'],
+              },
             },
-          },
-        ]}
-        layout={{
-          title: 'Actions Clavier et Souris',
-          xaxis: { title: 'Actions' },
-          yaxis: { title: 'Nombre d\'actions' },
-        }}
-      />
+          ]}
+          layout={{
+            title: 'Actions Clavier et Souris',
+            xaxis: { title: 'Actions' },
+            yaxis: { title: 'Nombre d\'actions' },
+          }}
+        />
+      )}
+
       {!isTraining ? (
         <button onClick={startTraining} style={{ padding: '10px', marginTop: '20px', backgroundColor: '#4CAF50', color: 'white' }}>
           Démarrer l'entraînement
@@ -113,6 +120,9 @@ const RealTimeGraph = () => {
           <h2>Score APM : {score}</h2>
         </div>
       )}
+
+      {/* Afficher le score une fois l'entraînement terminé */}
+      {!isTraining && <p><strong>Score Final :</strong> {score}</p>}
     </div>
   );
 };

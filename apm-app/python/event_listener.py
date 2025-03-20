@@ -1,17 +1,18 @@
-from pynput import mouse, keyboard
 import requests
+from pynput import mouse, keyboard
 import threading
-import time
 
 SERVER_URL = 'http://localhost:5000/update_data'
+IS_TRAINING = False
 
 def send_action(action):
-    try:
-        requests.post(SERVER_URL, json={'action': action})
-    except Exception as e:
-        print(f"Erreur d'envoi de l'action : {e}")
+    global IS_TRAINING
+    if IS_TRAINING:
+        try:
+            requests.post(SERVER_URL, json={'action': action})
+        except Exception as e:
+            print(f"Erreur d'envoi de l'action : {e}")
 
-# Gestion des touches clavier
 def on_press(key):
     try:
         if key.char == 'z':
@@ -23,17 +24,14 @@ def on_press(key):
         elif key.char == 'd':
             send_action('D')
     except AttributeError:
-        # Pour la touche espace (elle est spéciale)
         if key == keyboard.Key.space:
             send_action('Space')
 
-# Gestion des clics souris
 def on_click(x, y, button, pressed):
     if pressed:
         send_action('Click')
 
 def start_listening():
-    # Lancement des listeners en parallèle (clavier + souris)
     mouse_listener = mouse.Listener(on_click=on_click)
     keyboard_listener = keyboard.Listener(on_press=on_press)
 
@@ -43,11 +41,20 @@ def start_listening():
     mouse_listener.join()
     keyboard_listener.join()
 
+def start_training():
+    global IS_TRAINING
+    try:
+        response = requests.post('http://localhost:5000/start_training')
+        if response.status_code == 200:
+            IS_TRAINING = True
+            print("Entraînement démarré.")
+        else:
+            print("Erreur lors du démarrage de l'entraînement.")
+    except Exception as e:
+        print(f"Erreur : {e}")
+
 if __name__ == "__main__":
-    # Lancement dans un thread pour éviter de bloquer le programme principal
     thread = threading.Thread(target=start_listening)
     thread.start()
-
-    # Garder le programme en vie
-    while True:
-        time.sleep(1)
+    
+    start_training()

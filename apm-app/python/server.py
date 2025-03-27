@@ -7,8 +7,6 @@ CORS(app)
 
 init_db()
 
-is_training = False
-
 @app.route('/get_data', methods=['GET'])
 def get_data_route():
     data = get_data()
@@ -30,29 +28,21 @@ def get_training_score():
 
 @app.route('/update_data', methods=['POST'])
 def update_data_route():
-    global is_training
-    if is_training:
-        data = request.get_json()
-        action = data.get('action')
+    data = request.get_json()
+    action = data.get('action')
 
-        if action:
-            update_data(action)
+    if action:
+        update_data(action)
     
-        updated_data = get_data()
-        stats = get_apm_stats()
+    updated_data = get_data()
+    stats = get_apm_stats()
 
-        return jsonify({
-            "labels": list(updated_data.keys()),
-            "values": list(updated_data.values()),
-            "mean_apm": stats["mean_apm"],
-            "median_apm": stats["median_apm"]
-        })
-
-@app.route('/start_training', methods=['POST'])
-def start_training():
-    global is_training
-    is_training = True
-    return jsonify({"status": "Training started"}), 200
+    return jsonify({
+        "labels": list(updated_data.keys()),
+        "values": list(updated_data.values()),
+        "mean_apm": stats["mean_apm"],
+        "median_apm": stats["median_apm"]
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)

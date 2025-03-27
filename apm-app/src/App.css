@@ -36,3 +36,30 @@
     transform: rotate(360deg);
   }
 }
+
+nav {
+  margin-bottom: 20px;
+}
+
+nav button {
+  background-color: #3498db; /* Blue background */
+  color: white; /* White text */
+  border: none; /* No border */
+  padding: 10px 20px; /* Padding for size */
+  font-size: 16px; /* Font size */
+  cursor: pointer; /* Pointer cursor on hover */
+  border-radius: 5px; /* Rounded corners */
+  transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+nav button:hover {
+  background-color: #2980b9; /* Darker blue on hover */
+}
+
+nav button:active {
+  background-color: #1f618d; /* Even darker blue when clicked */
+}
+
+nav button + button {
+  margin-left: 10px; /* Add spacing between buttons */
+}

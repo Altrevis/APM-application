@@ -48,6 +48,9 @@ git clone [https://github.com/votre-repo/check-apm.git](https://github.com/Altre
 ```
 npm install
 ```
+```
+npm install react-router-dom
+```
 
 3. **Lancer server.py et event_listener.py**
 ```

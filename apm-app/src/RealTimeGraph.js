@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Plot from 'react-plotly.js';
+import { useNavigate } from 'react-router-dom'; // Importez useNavigate
 
 const RealTimeGraph = () => {
   const [data, setData] = useState({
@@ -8,6 +9,8 @@ const RealTimeGraph = () => {
     meanApm: 0,
     medianApm: null
   });
+
+  const navigate = useNavigate(); // Utilisez useNavigate pour la navigation
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -26,6 +29,11 @@ const RealTimeGraph = () => {
 
     return () => clearInterval(intervalId);
   }, []);
+
+  // Fonction pour rediriger vers la page des graphiques complets
+  const goToChartPage = () => {
+    navigate('/chart');
+  };
 
   return (
     <div>
@@ -53,6 +61,9 @@ const RealTimeGraph = () => {
           yaxis: { title: 'Nombre d\'actions' },
         }}
       />
+
+      {/* Bouton pour rediriger vers le graphique complet */}
+      <button onClick={goToChartPage}>Voir le graphique complet</button>
     </div>
   );
 };

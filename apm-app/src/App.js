@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import RealTimeGraph from './RealTimeGraph';
 import TrainingPage from './TrainingPage';
+import ChartPage from './ChartPage'; // Nouvelle page pour le graphique complet
 import './App.css';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
         <Routes>
           <Route path="/" element={<RealTimeGraph />} />
           <Route path="/training" element={<TrainingPage />} />
+          <Route path="/chart" element={<ChartPage />} /> {/* Nouvelle route */}
         </Routes>
       </div>
     </Router>

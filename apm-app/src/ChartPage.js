@@ -1,7 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Plot from 'react-plotly.js';
+import axios from 'axios';
 
 const ChartPage = () => {
+  const [chartData, setChartData] = useState({ x: [], y: [] });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios.get('http://localhost:5000/get_training_data');
+      const data = response.data;
+      setChartData({
+        x: Object.keys(data),
+        y: Object.values(data),
+      });
+    };
+    fetchData();
+  }, []);
+
   return (
     <div>
       <h1>Graphique Complet</h1>
@@ -9,8 +24,8 @@ const ChartPage = () => {
         data={[
           {
             type: 'bar',
-            x: ['Z', 'Q', 'S', 'D'],
-            y: [20, 25, 30, 35], // Remplacez ces valeurs par celles réelles
+            x: chartData.x,
+            y: chartData.y,
             marker: {
               color: ['green', 'yellow', 'purple', 'orange'],
             },

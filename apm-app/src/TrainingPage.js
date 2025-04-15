@@ -7,8 +7,7 @@ const TrainingPage = () => {
   const [activeKey, setActiveKey] = useState('');
   const [trainingCompleted, setTrainingCompleted] = useState(false); // Track if training is done
 
-  const boxes = ['z', 'q', 's', 'd'];
-  const actions = ['Z', 'Q', 'S', 'D', 'Space', 'Click'];
+  const boxes = React.useMemo(() => ['z', 'q', 's', 'd'], []);
 
   // Timer to count down from 60 seconds
   useEffect(() => {
@@ -26,15 +25,15 @@ const TrainingPage = () => {
     if (!trainingCompleted) {
       setActiveKey(boxes[Math.floor(Math.random() * boxes.length)]);
     }
-  }, [score, trainingCompleted]);
+  }, [boxes, score, trainingCompleted]);
 
   // Handle key press events
-  const handleKeyPress = (event) => {
+  const handleKeyPress = React.useCallback((event) => {
     if (event.key === activeKey) {
       setScore((prev) => prev + 1);
       updateActionData(activeKey); // Send action data to the server
     }
-  };
+  }, [activeKey]);
 
   // Send action data to the server
   const updateActionData = async (action) => {
@@ -43,14 +42,15 @@ const TrainingPage = () => {
 
   // Send training data when the training is completed
   const sendTrainingData = async () => {
-    await axios.post('http://localhost:5000/update_data', { action: 'Training Complete' });
+    const trainingResults = { Z: 10, Q: 15, S: 20, D: 25 }; // Exemple de données
+    await axios.post('http://localhost:5000/save_training_results', trainingResults);
   };
 
   // Add and remove the keydown event listener
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [activeKey]);
+  }, [activeKey, handleKeyPress]);
 
   return (
     <div style={{ textAlign: 'center', marginTop: '50px' }}>

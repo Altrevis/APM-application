@@ -2,11 +2,13 @@ import sqlite3
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from database import DB_FILE, init_db, get_data, update_data, get_apm_stats
+from database import insert_training_data, get_training_data, init_training_db
 
 app = Flask(__name__)
 CORS(app)
 
 init_db()
+init_training_db()
 
 @app.route('/get_data', methods=['GET'])
 def get_data_route():
@@ -72,6 +74,18 @@ def update_data_route():
         "mean_apm": stats["mean_apm"],
         "median_apm": stats["median_apm"]
     })
+
+@app.route('/save_training_results', methods=['POST'])
+def save_training_results():
+    data = request.get_json()
+    for action, count in data.items():
+        insert_training_data(action, count)
+    return jsonify({"message": "Training results saved successfully!"})
+
+@app.route('/get_training_data', methods=['GET'])
+def get_training_data_route():
+    data = get_training_data()
+    return jsonify(data)
 
 if __name__ == '__main__':
     app.run(debug=True)

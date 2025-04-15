@@ -2,6 +2,7 @@ import sqlite3
 from datetime import datetime
 
 DB_FILE = 'data.db'
+TRAINING_DB_FILE = 'entrainement.db'
 
 def init_db():
     connection = sqlite3.connect(DB_FILE)
@@ -35,6 +36,22 @@ def init_db():
     connection.commit()
     connection.close()
 
+def init_training_db():
+    connection = sqlite3.connect(TRAINING_DB_FILE)
+    cursor = connection.cursor()
+
+    # Créer la table pour stocker les résultats d'entraînement
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS training_results (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            action TEXT,
+            count INTEGER,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    connection.commit()
+    connection.close()
+
 def get_data():
     connection = sqlite3.connect(DB_FILE)
     cursor = connection.cursor()
@@ -64,6 +81,29 @@ def update_data(action):
     
     connection.commit()
     connection.close()
+
+def insert_training_data(action, count):
+    connection = sqlite3.connect(TRAINING_DB_FILE)
+    cursor = connection.cursor()
+
+    cursor.execute('''
+        INSERT INTO training_results (action, count) VALUES (?, ?)
+    ''', (action, count))
+
+    connection.commit()
+    connection.close()
+
+def get_training_data():
+    connection = sqlite3.connect(TRAINING_DB_FILE)
+    cursor = connection.cursor()
+
+    cursor.execute('''
+        SELECT action, SUM(count) FROM training_results GROUP BY action
+    ''')
+    data = cursor.fetchall()
+
+    connection.close()
+    return {action: count for action, count in data}
 
 def get_apm_stats():
     connection = sqlite3.connect(DB_FILE)
@@ -102,5 +142,7 @@ def get_apm_stats():
         "median_apm": median_apm
     }
 
+# Initialiser les deux bases de données
 if __name__ == "__main__":
     init_db()
+    init_training_db()

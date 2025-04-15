@@ -6,6 +6,7 @@ const TrainingPage = () => {
   const [timeLeft, setTimeLeft] = useState(60);
   const [activeKey, setActiveKey] = useState('');
   const [trainingCompleted, setTrainingCompleted] = useState(false); // Track if training is done
+  const [keyScores, setKeyScores] = useState({ z: 0, q: 0, s: 0, d: 0 }); // Track individual key scores
 
   const boxes = React.useMemo(() => ['z', 'q', 's', 'd'], []);
 
@@ -31,6 +32,10 @@ const TrainingPage = () => {
   const handleKeyPress = React.useCallback((event) => {
     if (event.key === activeKey) {
       setScore((prev) => prev + 1);
+      setKeyScores((prev) => ({
+        ...prev,
+        [activeKey]: prev[activeKey] + 1, // Increment the score for the active key
+      }));
       updateActionData(activeKey); // Send action data to the server
     }
   }, [activeKey]);
@@ -42,8 +47,7 @@ const TrainingPage = () => {
 
   // Send training data when the training is completed
   const sendTrainingData = async () => {
-    const trainingResults = { Z: 10, Q: 15, S: 20, D: 25 }; // Exemple de données
-    await axios.post('http://localhost:5000/save_training_results', trainingResults);
+    await axios.post('http://localhost:5000/save_training_results', keyScores); // Send dynamic key scores
   };
 
   // Add and remove the keydown event listener

@@ -30,10 +30,7 @@ const RealTimeGraph = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  // Fonction pour rediriger vers la page des graphiques complets
-  const goToChartPage = () => {
-    navigate('/chart');
-  };
+
 
   return (
     <div>
@@ -62,8 +59,6 @@ const RealTimeGraph = () => {
         }}
       />
 
-      {/* Bouton pour rediriger vers le graphique complet */}
-      <button onClick={goToChartPage}>Voir le graphique complet</button>
     </div>
   );
 };

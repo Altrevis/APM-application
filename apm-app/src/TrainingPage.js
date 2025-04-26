@@ -2,59 +2,69 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const TrainingPage = () => {
+  const [sessionId, setSessionId] = useState(null);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
   const [activeKey, setActiveKey] = useState('');
-  const [trainingCompleted, setTrainingCompleted] = useState(false); // Track if training is done
-  const [keyScores, setKeyScores] = useState({ z: 0, q: 0, s: 0, d: 0 }); // Track individual key scores
-
+  const [trainingCompleted, setTrainingCompleted] = useState(false);
+  const [keyScores, setKeyScores] = useState({ z: 0, q: 0, s: 0, d: 0 });
   const boxes = React.useMemo(() => ['z', 'q', 's', 'd'], []);
 
-  // Timer to count down from 60 seconds
+  useEffect(() => {
+    const createSession = async () => {
+      try {
+        const response = await axios.post('http://localhost:5000/start_training_session');
+        setSessionId(response.data.session_id);
+      } catch (error) {
+        console.error("Erreur lors de la création de la session:", error);
+      }
+    };
+    createSession();
+  }, []);
   useEffect(() => {
     if (timeLeft > 0) {
       const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
       return () => clearInterval(timer);
     } else {
       setTrainingCompleted(true);
-      sendTrainingData(); // Send data when time runs out
+      sendTrainingData();
     }
   }, [timeLeft]);
 
-  // Randomly select a new active key whenever the score changes
   useEffect(() => {
     if (!trainingCompleted) {
       setActiveKey(boxes[Math.floor(Math.random() * boxes.length)]);
     }
   }, [boxes, score, trainingCompleted]);
 
-  // Handle key press events
   const handleKeyPress = React.useCallback((event) => {
     if (event.key === activeKey) {
       setScore((prev) => prev + 1);
       setKeyScores((prev) => ({
         ...prev,
-        [activeKey]: prev[activeKey] + 1, // Increment the score for the active key
+        [activeKey]: prev[activeKey] + 1,
       }));
-      updateActionData(activeKey); // Send action data to the server
+      updateActionData(activeKey);
     }
   }, [activeKey]);
 
-  // Send action data to the server
   const updateActionData = async (action) => {
     await axios.post('http://localhost:5000/update_data', { action });
   };
 
-  // Send training data when the training is completed
   const sendTrainingData = async () => {
-    await axios.post('http://localhost:5000/save_training_results', keyScores); // Send dynamic key scores
+    if (sessionId) {
+      await axios.post('http://localhost:5000/save_training_results_with_session', {
+        session_id: sessionId,
+        results: keyScores,
+      });
+    }
   };
 
-  // Add and remove the keydown event listener
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [activeKey, handleKeyPress]);
+  }, [handleKeyPress]);
 
   return (
     <div style={{ textAlign: 'center', marginTop: '50px' }}>

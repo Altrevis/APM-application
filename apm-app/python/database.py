@@ -39,14 +39,20 @@ def init_db():
 def init_training_db():
     connection = sqlite3.connect(TRAINING_DB_FILE)
     cursor = connection.cursor()
-
-    # Créer la table pour stocker les résultats d'entraînement
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS training_sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_start DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS training_results (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id INTEGER,
             action TEXT,
             count INTEGER,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(session_id) REFERENCES training_sessions(id)
         )
     ''')
     connection.commit()
@@ -125,18 +131,9 @@ def get_apm_stats():
         LIMIT 60
     ''')
     timestamps = [row[0] for row in cursor.fetchall()]
-
     connection.close()
-
-    if len(timestamps) > 0:
-        # Moyenne APM
-        mean_apm = actions_last_minute
-        # Médiane APM
-        median_apm = timestamps[len(timestamps) // 2]
-    else:
-        mean_apm = 0
-        median_apm = None
-
+    mean_apm = actions_last_minute
+    median_apm = timestamps[len(timestamps) // 2] if len(timestamps) > 0 else None
     return {
         "mean_apm": mean_apm,
         "median_apm": median_apm

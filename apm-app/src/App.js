@@ -17,6 +17,9 @@ function App() {
           <Link to="/training">
             <button>Training</button>
           </Link>
+          <Link to="/chart">
+            <button>Graphique Complet</button>
+          </Link>
         </nav>
 
         {/* Define routes for the application */}

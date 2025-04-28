@@ -1,36 +1,32 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom'; // 🟦 remplacé Link par NavLink
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import RealTimeGraph from './RealTimeGraph';
 import TrainingPage from './TrainingPage';
-import ChartPage from './chartPage';
+import ChartPage from './ChartPage'; // Nouvelle page pour le graphique complet
 import './App.css';
 
 function App() {
   return (
     <Router>
       <div className="App">
-        {/* NAVIGATION BAR */}
-        <nav className="navbar">
-          <h1>APM Dashboard</h1>
-          <div className="nav-links">
-            {/* 🟦 remplacé Link par NavLink + logique pour active */}
-            <NavLink to="/" className={({ isActive }) => isActive ? 'active' : ''}>
-              <button>Graphs</button>
-            </NavLink>
-            <NavLink to="/training" className={({ isActive }) => isActive ? 'active' : ''}>
-              <button>Training</button>
-            </NavLink>
-            <NavLink to="/chart" className={({ isActive }) => isActive ? 'active' : ''}>
-              <button>Chart</button>
-            </NavLink>
-          </div>
+        {/* Navigation bar with styled buttons */}
+        <nav>
+          <Link to="/">
+            <button>Graphs</button>
+          </Link>
+          <Link to="/training">
+            <button>Training</button>
+          </Link>
+          <Link to="/chart">
+            <button>Graphique Complet</button>
+          </Link>
         </nav>
 
-        {/* PAGES */}
+        {/* Define routes for the application */}
         <Routes>
           <Route path="/" element={<RealTimeGraph />} />
           <Route path="/training" element={<TrainingPage />} />
-          <Route path="/chart" element={<ChartPage />} />
+          <Route path="/chart" element={<ChartPage />} /> {/* Nouvelle route */}
         </Routes>
       </div>
     </Router>

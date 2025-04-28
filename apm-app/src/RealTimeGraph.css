@@ -1,0 +1,47 @@
+.graph-card {
+    width: 80%;
+    max-width: 900px;
+    margin: 40px auto 40px auto;
+    padding: 2rem;
+    border-radius: 16px;
+    background: rgba(34, 114, 255, 0.08);
+    box-shadow: 0 4px 40px rgba(34, 114, 255, 0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(34, 114, 255, 0.2);
+    color: white;
+  }
+  
+  .graph-title {
+    text-align: center;
+  }
+  
+  .apm {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .plot {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .button-wrapper {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .button-wrapper button {
+    padding: 10px 20px;
+    background-color: #2272FF;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .button-wrapper button:hover {
+    background-color: #1a5de0;
+  }

@@ -68,26 +68,34 @@ const TrainingPage = () => {
 
   return (
     <div style={{ textAlign: 'center', marginTop: '50px' }}>
-      <h1>Keyboard Training</h1>
-      <p>Time left: {timeLeft} seconds</p>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
-        {boxes.map((key) => (
-          <div
-            key={key}
-            style={{
-              width: '100px',
-              height: '100px',
-              backgroundColor: key === activeKey ? '#e74c3c' : '#3498db',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontSize: '24px',
-              cursor: 'pointer',
-            }}
-          >
-            {key.toUpperCase()}
-          </div>
+    <h1>Keyboard Training</h1>
+    <p>Time left: {timeLeft} seconds</p>
+    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
+      {boxes.map((key) => (
+        <div
+          key={key}
+          style={{
+            width: '100px',
+            height: '100px',
+            borderRadius: '20px',
+            background: key === activeKey
+              ? 'rgba(255, 0, 0, 0.3)'  // rouge transparent pour la touche active
+              : 'rgba(52, 152, 219, 0.2)', // bleu transparent sinon
+            boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            fontSize: '24px',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+          }}
+        >
+          {key.toUpperCase()}
+        </div>
         ))}
       </div>
       <p>Score: {score}</p>

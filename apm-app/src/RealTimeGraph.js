@@ -78,10 +78,6 @@ const RealTimeGraph = () => {
           }}
         />
       </div>
-
-      <div className="button-wrapper">
-        <button onClick={goToChartPage}>📊 Voir le graphique complet</button>
-      </div>
     </div>
   );
 };

@@ -39,23 +39,3 @@
   margin-top: 20px;
 }
 
-/* Styling for the button wrapper */
-.button-wrapper {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.button-wrapper button {
-  padding: 10px 20px;
-  background-color: #2272FF;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.button-wrapper button:hover {
-  background-color: #1a5de0;
-}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Plot from 'react-plotly.js';
 import axios from 'axios';
+import './chartPage.css'; 
 
 const ChartPage = () => {
   const [sessionsData, setSessionsData] = useState([]);
@@ -48,31 +49,33 @@ const ChartPage = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Comparaison des Résultats des Sessions d'Entraînement</h1>
+    <div className="chart-container">
+      <div className="chart-card">
+        <h1 className="chart-title">Comparaison des Résultats des Sessions d'Entraînement</h1>
 
-      {/* Affichage du graphique */}
-      <Plot
-        data={sessionsData.map((session, index) => {
-          const values = Object.values(session).filter((value) => typeof value === 'number');
+        {/* Affichage du graphique */}
+        <Plot
+          data={sessionsData.map((session, index) => {
+            const values = Object.values(session).filter((value) => typeof value === 'number');
 
-          return {
-            type: 'bar',
-            name: session.session,
-            x: Object.keys(session).filter((key) => key !== 'session'),
-            y: values,
-            marker: {
-              color: predefinedColors[index % predefinedColors.length], // Utilisation des couleurs prédéfinies
-            },
-          };
-        })}
-        layout={{
-          title: "Comparaison des Résultats des Sessions d'Entraînement",
-          barmode: 'group', // Regroupement des barres pour faciliter la comparaison
-          xaxis: { title: 'Actions' },
-          yaxis: { title: 'Nombre de fois' },
-        }}
-      />
+            return {
+              type: 'bar',
+              name: session.session,
+              x: Object.keys(session).filter((key) => key !== 'session'),
+              y: values,
+              marker: {
+                color: predefinedColors[index % predefinedColors.length], // Utilisation des couleurs prédéfinies
+              },
+            };
+          })}
+          layout={{
+            title: "Comparaison des Résultats des Sessions d'Entraînement",
+            barmode: 'group', // Regroupement des barres pour faciliter la comparaison
+            xaxis: { title: 'Actions' },
+            yaxis: { title: 'Nombre de fois' },
+          }}
+        />
+      </div>
     </div>
   );
 };
